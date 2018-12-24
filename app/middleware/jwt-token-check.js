@@ -10,7 +10,10 @@ function check(req, res, next) {
         // verifies secret and checks exp
         jwt.verify(token, jwtSecret, function(err, decoded) {
             if (err) {
-                return res.json({ success: false, message: 'Failed to authenticate.' });
+                return res.status(403).send({
+                    success: false,
+                    message: 'Failed to authenticate.'
+                });
             } else {
                 // if everything is good, save to request for use in other routes
                 req.decoded = decoded;
