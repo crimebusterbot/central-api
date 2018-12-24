@@ -55,7 +55,7 @@ function Db() {
             try {
                 con = await connection.acquire();
 
-                con.query('UPDATE users SET jwtToken = ? WHERE id = ?', [token, id], (error, results) => {
+                con.query('UPDATE users SET jwtToken = ?, lastLogin = ? WHERE id = ?', [token, new Date(), id], (error, results) => {
                     con.release();
 
                     if (error) {
@@ -69,7 +69,7 @@ function Db() {
                 reject(error);
             }
         });
-    }
+    };
 }
 
 module.exports = new Db();
