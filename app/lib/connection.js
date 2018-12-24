@@ -1,5 +1,5 @@
 const mysql = require('mysql');
-const variables = require('../../config/database');
+const {db_host, db_user, db_password, db_name} = require('../../config/database');
 
 function Connection() {
     this.pool = null;
@@ -7,10 +7,10 @@ function Connection() {
     this.init = function(){
         this.pool = mysql.createPool({
             connectionLimit: 20,
-            host: variables.db_host,
-            user: variables.db_user,
-            password: variables.db_password,
-            database: variables.db_name
+            host: db_host,
+            user: db_user,
+            password: db_password,
+            database: db_name
         });
     };
 

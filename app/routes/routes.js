@@ -1,7 +1,9 @@
 const express = require('express');
 const router = express.Router();
 
+const jwtAuth = require('../middleware/jwt-token-check');
 const check = require('./checkFakeWebshop/check');
+const auth = require('./authenticateUser/authenticate-user');
 
 // Stel CORS in
 router.all('*', (req, res, next) => {
@@ -12,7 +14,14 @@ router.all('*', (req, res, next) => {
     next();
 });
 
-router.post('/webshop/check', (req, res) => {
+// Unauthenticated routes
+router.post('/user/auth', (req, res) => {
+    auth.authenticate(req.body.username, req.body.password, res);
+});
+
+
+// Authicated routes
+router.post('/webshop/check', jwtAuth.check, (req, res) => {
     check.check(req.body, res);
 });
 

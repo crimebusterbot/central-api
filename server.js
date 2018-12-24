@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const apiKeyCheck = require('./app/middleware/api-key-check');
 
 let port = process.env.PORT || 8081;
 
@@ -22,7 +23,7 @@ app.disable('x-powered-by');
 connection.init();
 
 // Maak de routes aan en zorg dat ze reageren op /api/v1
-app.use('/v1', routes);
+app.use('/v1', apiKeyCheck.apiKey, routes);
 
 const server = app.listen(port, function() {
     console.log( 'Server listening on port ' + server.address().port );
