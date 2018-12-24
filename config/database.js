@@ -1,6 +1,6 @@
 module.exports = {
-    db_password: 'aZ2s$0Aj%WY8sE$I',
-    db_user: 'pcmill',
-    db_name: 'domains-nl',
-    db_host: 'readingbinge.c8zkrmbsoihc.eu-west-2.rds.amazonaws.com'
+    db_password: process.env.DB_PASSWORD,
+    db_user: process.env.DB_USER,
+    db_name: process.env.DB_NAME,
+    db_host: process.env.DB_HOST
 };

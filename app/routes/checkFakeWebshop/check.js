@@ -1,6 +1,5 @@
 const extract = require('../../lib/extract');
 const db = require('./database-queries');
-const screenshot = require('../../lib/screenshot');
 const rp = require('request-promise-native');
 
 function Check() {
@@ -31,7 +30,7 @@ function Check() {
             }
 
             // Doe een check met machine learning
-            let mlInfo = await rp(`https://wrap-ml.api.webshop-checker.nl/?u=${req.url}`);
+            let mlInfo = await rp(`${process.env.WRAP_ML_URL}/?u=${req.url}`);
             mlInfo = JSON.parse(mlInfo);
             // TODO Doe een check op certificaat
 

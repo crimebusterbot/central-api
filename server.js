@@ -1,6 +1,7 @@
 // BASE SETUP
 
 // call the packages we need
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const cors = require('cors');
