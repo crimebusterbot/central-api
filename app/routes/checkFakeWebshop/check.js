@@ -6,6 +6,7 @@ function Check() {
     this.check = async (req, res) => {
         // Check of deze fake webshop al in de db zit
         let webshopId;
+        let newWebshop;
 
         try {
             if(!req.url) throw({success: false, message: 'No URL'});
@@ -14,6 +15,8 @@ function Check() {
             let webshopExists = await checkIfExists(domainInfo.domainName, domainInfo.domainExtension);
 
             if(webshopExists.length === 0 && !domainInfo.notFound) {
+                newWebshop = true;
+
                 // We maken een nieuwe webshop.
                 let webshop = await insertNewWebshop(req.url, domainInfo.domainName, domainInfo.domainExtension);
                 webshopId = webshop.insertId;
@@ -24,6 +27,7 @@ function Check() {
                 res.send({success: true, notFound: true, message: `${req.url} was added to the ledger`});
                 return;
             } else if (webshopExists.length > 0) {
+                newWebshop = false;
                 webshopId = webshopExists[0].id;
             } else {
                 throw({success: false, message: 'We don\'t want to save non working websites if they weren\'t saved before.'});
@@ -39,6 +43,7 @@ function Check() {
             res.status(200);
             res.send({
                 success: true,
+                new: newWebshop,
                 message: `${req.url} was added to the ledger`,
                 score: mlInfo.prediction,
                 screenshot: mlInfo.imageLocation
