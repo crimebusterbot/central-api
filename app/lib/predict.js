@@ -6,27 +6,25 @@ const path = require('path');
 const {promisify} = require('util');
 
 function Prediction() {
-    this.predict = async (website, res) => {
+    this.predict = async (website) => {
         if (website) {
             try {
-                let screenshot = await requestScreenshot(res, website);
-                let filename = await getImageAndSave(res, screenshot);
-                let response = await sendPrediction(res, filename);
-                await deleteFile(res, filename);
+                let screenshot = await requestScreenshot(website);
+                let filename = await getImageAndSave(screenshot);
+                let response = await sendPrediction(filename);
+                await deleteFile(filename);
 
                 return {success: true, prediction: response, imageLocation: screenshot.imageLocation, headers: screenshot.headerInformation, statusCode: screenshot.statusCode};
             } catch(error) {
-                res.status(500);
-                res.send(error);
+                throw(error);
             }
         } else {
-            res.status(500);
-            res.send({ success: false, message: 'There is no URL defined'});
+            throw{ success: false, message: 'There is no URL defined'};
         }
     }
 }
 
-async function requestScreenshot (res, url) {
+async function requestScreenshot (url) {
     try {
         let encodedUrl = encodeURIComponent(url);
         let screenshot = await rp(`${process.env.SCREENSHOT_URL}/?u=${encodedUrl}`);
@@ -37,7 +35,7 @@ async function requestScreenshot (res, url) {
     }
 }
 
-async function getImageAndSave (res, screenshot) {
+async function getImageAndSave (screenshot) {
     const options = {
         url: screenshot.imageLocation,
         dest: './images'
@@ -52,7 +50,7 @@ async function getImageAndSave (res, screenshot) {
     }
 }
 
-async function sendPrediction (res, filename) {
+async function sendPrediction (filename) {
     let responseBody;
 
     try {
@@ -99,7 +97,7 @@ async function sendPrediction (res, filename) {
     }
 }
 
-async function deleteFile (res, filename) {
+async function deleteFile (filename) {
     try {
         const remove = promisify(fs.unlink);
         await remove(filename);
