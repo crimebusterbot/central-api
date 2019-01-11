@@ -1,4 +1,5 @@
 const extract = require('../../lib/extract');
+const predict = require('../../lib/predict');
 const db = require('./database-queries');
 const rp = require('request-promise-native');
 
@@ -34,8 +35,7 @@ function Check() {
             }
 
             // Doe een check met machine learning
-            let mlInfo = await rp(`${process.env.WRAP_ML_URL}/?u=${req.url}`);
-            mlInfo = JSON.parse(mlInfo);
+            let mlInfo = await predict.predict(req.url, res);
             // TODO Doe een check op certificaat
 
             await addNewLedger(webshopId, domainInfo.ipAddress, mlInfo.imageLocation, new Date(), true, mlInfo.prediction.fake < 0.5, mlInfo.prediction.fake, '', mlInfo.headers, mlInfo.statusCode);

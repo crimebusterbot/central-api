@@ -4,6 +4,7 @@ const router = express.Router();
 const jwtAuth = require('../middleware/jwt-token-check');
 const check = require('./checkFakeWebshop/check');
 const auth = require('./authenticateUser/authenticate-user');
+const data = require('./data/data');
 
 // Stel CORS in
 router.all('*', (req, res, next) => {
@@ -23,6 +24,14 @@ router.post('/user/auth', (req, res) => {
 // Authicated routes
 router.post('/webshop/check', jwtAuth.check, (req, res) => {
     check.check(req.body, res);
+});
+
+router.get('/data/total', jwtAuth.check, (req, res) => {
+    data.totalWebshops(req, res);
+});
+
+router.get('/data/graph', jwtAuth.check, (req, res) => {
+    data.totalWebshopsInTime(req, res);
 });
 
 module.exports = router;
