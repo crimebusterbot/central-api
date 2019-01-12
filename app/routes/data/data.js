@@ -16,10 +16,10 @@ function Data () {
 
     this.totalWebshopsInTime = async (req, res) => {
         try {
-            const total = await db.getTotalInTime();
+            const months = await db.getTotalInTime();
 
             res.status(200);
-            res.send({success: true, count: total});
+            res.send({success: true, count: months});
         } catch (error) {
             res.status(401);
             res.send({success: false, message: 'Something went wrong trying to get the total number of webshops.'});

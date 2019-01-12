@@ -53,7 +53,7 @@ function Db() {
             try {
                 con = await connection.acquire();
 
-                con.query('select count(id) as total, DATE(added) as added from website group by DATE(added)', (error, results) => {
+                con.query('select count(id) as amount, date_format(added, \'%m-%Y\') as month from `website` group by year(added), month(added)', (error, results) => {
                     con.release();
 
                     if (error) {
