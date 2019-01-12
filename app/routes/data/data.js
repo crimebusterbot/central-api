@@ -3,10 +3,11 @@ const db = require('./database-queries');
 function Data () {
     this.totalWebshops = async (req, res) => {
         try {
-            const total = await db.getTotal();
+            const total = await db.getTotalCount();
+            const good = await db.getGoodCount();
 
             res.status(200);
-            res.send({success: true, count: total[0].total});
+            res.send({success: true, total: total, good: good, fake: total - good});
         } catch (error) {
             res.status(401);
             res.send({success: false, message: 'Something went wrong trying to get the total number of webshops.'});

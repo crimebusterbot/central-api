@@ -2,7 +2,7 @@ const mysql = require('mysql');
 const connection = require('../../lib/connection');
 
 function Db() {
-    this.getTotal = async () => {
+    this.getTotalCount = async () => {
         return new Promise(async (resolve, reject) => {
             let con;
 
@@ -13,12 +13,33 @@ function Db() {
                     con.release();
 
                     if (error) {
-                        console.log(error);
                         reject(error);
                     } else {
-                        resolve(results);
+                        resolve(results[0].total);
                     }
-                })
+                });
+            } catch (error) {
+                reject(error);
+            }
+        })
+    };
+
+    this.getGoodCount = async () => {
+        return new Promise(async (resolve, reject) => {
+            let con;
+
+            try {
+                con = await connection.acquire();
+
+                con.query('select count(id) as good from `webshop-good`', (error, results) => {
+                    con.release();
+
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(results[0].good);
+                    }
+                });
             } catch (error) {
                 reject(error);
             }
