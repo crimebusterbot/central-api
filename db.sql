@@ -37,6 +37,7 @@ ENGINE = InnoDB;
 CREATE TABLE IF NOT EXISTS `mydb`.`ledger` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `fakeWebshop` INT NULL,
+  `path` VARCHAR(512) NULL,
   `ipAddress` VARCHAR(64) NULL,
   `httpsAvailable` TINYINT NULL,
   `screenshotUrl` TEXT NULL,
@@ -44,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `mydb`.`ledger` (
   `live` TINYINT NULL,
   `notFakeAnymore` TINYINT NULL,
   `fakeScore` FLOAT NULL,
+  `score` JSON NULL,
   `certificateCheck` VARCHAR(256) NULL,
   `headers` JSON NULL,
   `responseCode` INT NULL,
