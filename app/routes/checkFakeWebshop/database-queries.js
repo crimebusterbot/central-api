@@ -69,14 +69,14 @@ function Db() {
         })
     };
 
-    this.addNewLedger = async (webshopId, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, certificateCheck, headers, statusCode) => {
+    this.addNewLedger = async (webshopId, path, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, score, certificateCheck, headers, statusCode) => {
         return new Promise(async (resolve, reject) => {
             let con;
 
             try {
                 con = await connection.acquire();
 
-                con.query('INSERT INTO `ledger` SET fakeWebshop = ?, ipAddress = ?, screenshotURL = ?, checked = ?, live = ?, notFakeAnymore = ?, fakeScore = ?, certificateCheck = ?, headers = ?, statusCode = ?', [webshopId, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, certificateCheck, headers, statusCode], (error, results) => {
+                con.query('INSERT INTO `ledger` SET fakeWebshop = ?, path = ?, ipAddress = ?, screenshotURL = ?, checked = ?, live = ?, notFakeAnymore = ?, fakeScore = ?, score= ?, certificateCheck = ?, headers = ?, statusCode = ?', [webshopId, path, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, score, certificateCheck, headers, statusCode], (error, results) => {
                     con.release();
 
                     if(error) {

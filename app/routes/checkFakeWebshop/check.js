@@ -1,7 +1,7 @@
+const url = require('url');
 const extract = require('../../lib/extract');
 const predict = require('../../lib/predict');
 const db = require('./database-queries');
-const rp = require('request-promise-native');
 
 function Check() {
     this.check = async (req, res) => {
@@ -36,9 +36,13 @@ function Check() {
 
             // Doe een check met machine learning
             let mlInfo = await predict.predict(req.url, res);
+            
+            let urlFull = url.parse(req.url);
+            let path = [urlFull.pathname, urlFull.query, urlFull.hash].join('');
+
             // TODO Doe een check op certificaat
 
-            await addNewLedger(webshopId, domainInfo.ipAddress, mlInfo.imageLocation, new Date(), true, mlInfo.prediction.fake < 0.5, mlInfo.prediction.fake, '', mlInfo.headers, mlInfo.statusCode);
+            await addNewLedger(webshopId, path, domainInfo.ipAddress, mlInfo.imageLocation, new Date(), true, mlInfo.prediction.fake < 0.5, mlInfo.prediction.fake, JSON.stringify(mlInfo.prediction), '', mlInfo.headers, mlInfo.statusCode);
 
             res.status(200);
             res.send({
@@ -66,9 +70,9 @@ async function checkIfExists(domainName, domainExtension) {
     }
 }
 
-async function addNewLedger(webshopId, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, certificateCheck, headers, statusCode) {
+async function addNewLedger(webshopId, path, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, score, certificateCheck, headers, statusCode) {
     try {
-        let results = await db.addNewLedger(webshopId, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, certificateCheck, JSON.stringify(headers), statusCode);
+        let results = await db.addNewLedger(webshopId, path, ipAddress, screenshotURL, checked, live, notFakeAnymore, fakeScore, score, certificateCheck, JSON.stringify(headers), statusCode);
 
         return results;
     } catch(error) {
