@@ -22,7 +22,7 @@ The database is expected to be MySQL, the schema can be made with db.sql
 
 ## Doing a request
 
-First authenticate your request with a valid access token. Do the following POST request:
+First authenticate your request with a valid access token. Do the following POST request to `/v1/user/auth`:
 
 ```
 { "username": "username", "password": "password" }
@@ -40,7 +40,7 @@ You should recieve the following reply:
 }
 ```
 
-Now you can do a webshop check in with the following request:
+Now you can do a webshop check in with the following request to `/v1/webshop/check`:
 
 ```
 { "url": "http://whatever" }
