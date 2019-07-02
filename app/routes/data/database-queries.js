@@ -1,7 +1,28 @@
-const mysql = require('mysql');
 const connection = require('../../lib/connection');
 
 function Db() {
+    this.getAllFakeWebshops = async () => {
+        return new Promise(async (resolve, reject) => {
+            let con;
+
+            try {
+                con = await connection.acquire();
+
+                con.query('SELECT website.domainName, website.domainExtension, ledger.fakeScore, ledger.fakeWebshop, MAX(ledger.checked) as checked FROM ledger INNER JOIN website ON website.id = ledger.fakeWebshop where fakeScore > 0.5 and live = 1 group by fakeWebshop order by MAX(ledger.checked) DESC', (error, results) => {
+                    con.release();
+
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(results);
+                    }
+                });
+            } catch (error) {
+                reject(error);
+            }
+        })
+    };
+
     this.getTotalCount = async () => {
         return new Promise(async (resolve, reject) => {
             let con;

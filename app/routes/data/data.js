@@ -25,6 +25,27 @@ function Data () {
             res.send({success: false, message: 'Something went wrong trying to get the total number of webshops.'});
         }
     }
+
+    this.getAllFakeWebshops = async (req, res) => {
+        try {
+            const results = await db.getAllFakeWebshops();
+            const mapped = results.map((result) => {
+                return {
+                    url: `http://${result.domainName}.${result.domainExtension}`,
+                    fakeScore: result.fakeScore,
+                    checked: result.checked
+                }
+            });
+
+            res.status(200);
+            res.send({success: true, result: mapped});
+        } catch (error) {
+            console.log(error);
+            
+            res.status(500);
+            res.send({success: false, message: 'Something went wrong trying compile list of fake webshops.'});
+        }
+    }
 }
 
 module.exports = new Data();

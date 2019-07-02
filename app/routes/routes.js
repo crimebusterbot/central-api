@@ -44,4 +44,9 @@ router.get('/data/graph', jwtAuth.check, (req, res) => {
     data.totalWebshopsInTime(req, res);
 });
 
+router.get('/data/fake', jwtAuth.check, (req, res) => {
+    logger.log('Route data/fake taken');
+    data.getAllFakeWebshops(req, res);
+});
+
 module.exports = router;
