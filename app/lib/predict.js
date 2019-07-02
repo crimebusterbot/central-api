@@ -1,6 +1,7 @@
 const request = require('request');
 const download = require('image-downloader');
 const rp = require('request-promise-native');
+const logger = require('./logger');
 const fs = require('fs');
 const path = require('path');
 const {promisify} = require('util');
@@ -25,85 +26,94 @@ function Prediction() {
 }
 
 async function requestScreenshot (url) {
-    try {
-        let encodedUrl = encodeURIComponent(url);
-        let screenshot = await rp(`${process.env.SCREENSHOT_URL}/?u=${encodedUrl}`);
+    return new Promise(async (resolve, reject) => {
+        try {
+            logger.log('Getting a screenshot');
+            let encodedUrl = encodeURIComponent(url);
+            let screenshot = await rp(`${process.env.SCREENSHOT_URL}/?u=${encodedUrl}`);
 
-        return JSON.parse(screenshot);
-    } catch (error) {
-        throw({ success: false, message: 'Could not get screenshot'});
-    }
+            resolve(JSON.parse(screenshot));
+        } catch (error) {
+            reject({ success: false, message: 'Could not get screenshot'});
+        }
+    });
 }
 
 async function getImageAndSave (screenshot) {
-    const options = {
-        url: screenshot.imageLocation,
-        dest: './images'
-    };
+    return new Promise(async (resolve, reject) => {
+        const options = {
+            url: screenshot.imageLocation,
+            dest: './images'
+        };
 
-    try {
-        const { filename } = await download.image(options);
+        try {
+            logger.log('Downloading screenshot');
+            const { filename } = await download.image(options);
 
-        return filename;
-    } catch (error) {
-        throw({ success: false, message: 'We could not save screenshot to the disk of this server'});
-    }
+            resolve(filename);
+        } catch (error) {
+            reject({ success: false, message: 'We could not save screenshot to the disk of this server'});
+        }        
+    });
 }
 
 async function sendPrediction (filename) {
-    let responseBody;
+    return new Promise(async (resolve, reject) => {
+        let responseBody;
 
-    try {
-        // Doe de check op de ml service
-        await rp({
-            url: process.env.SERVE_URL,
-            headers: {
-                'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
-            },
-            cache: false,
-            contentType: false,
-            processData: false,
-            async: true,
-            method: 'POST',
-            formData: {
-                file: {
-                    value: fs.createReadStream(filename),
-                    options: {
-                        filename: filename,
-                        contentType: null
+        try {
+            logger.log('Sending screenshot to serve ml service.');
+            
+            await rp({
+                url: process.env.SERVE_URL,
+                headers: {
+                    'content-type': 'multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW'
+                },
+                cache: false,
+                contentType: false,
+                processData: false,
+                async: true,
+                method: 'POST',
+                formData: {
+                    file: {
+                        value: fs.createReadStream(filename),
+                        options: {
+                            filename: filename,
+                            contentType: null
+                        }
                     }
                 }
-            }
-
-        }, (error, response) => {
-            if (error) {
-                console.log(error);
-
-                throw({success: false, message: 'We could not get a prediction from the ServeML service.'});
-            } else {
-                // Send back json from api
-                try {
-                    responseBody = JSON.parse(response.body);
-                } catch (error) {
-                    console.log(error);
-                    throw({success: false, message: 'We could not get a prediction from the ServeML service.'});
+            }, (error, response) => {
+                if (error) {
+                    reject({success: false, message: 'We could not get a prediction from the ServeML service.'});
+                } else {
+                    // Send back json from api
+                    try {
+                        responseBody = JSON.parse(response.body);
+                    } catch (error) {
+                        reject({success: false, message: 'We could not get a prediction from the ServeML service.'});
+                    }
                 }
-            }
-        });
+            });
 
-        return responseBody;
-    } catch (error) {
-        console.log(error);
-    }
+            resolve(responseBody);
+        } catch (error) {
+            reject({success: false, message: 'Serve ML threw a fit'});
+        }
+    });
 }
 
 async function deleteFile (filename) {
-    try {
-        const remove = promisify(fs.unlink);
-        await remove(filename);
-    } catch (error) {
-        throw({success: false, message: 'We could not clean up after the request.'});
-    }
+    return new Promise(async (resolve, reject) => {
+        try {
+            logger.log('Deleting local screenshot image');
+            const remove = promisify(fs.unlink);
+            await remove(filename);
+            resolve();
+        } catch (error) {
+            reject({success: false, message: 'We could not clean up after the request.'});
+        }
+    });
 }
 
 module.exports = new Prediction();

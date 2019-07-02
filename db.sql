@@ -30,6 +30,22 @@ CREATE TABLE IF NOT EXISTS `mydb`.`website` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `mydb`.`domains`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`domains` (
+  `domeinnaam` VARCHAR(256) NOT NULL,
+  `ds` TEXT NULL DEFAULT NULL,
+  `rrsig` TEXT NULL DEFAULT NULL,
+  `ns0` VARCHAR(45) NULL DEFAULT NULL,
+  `ns1` VARCHAR(45) NULL DEFAULT NULL,
+  `ns2` VARCHAR(45) NULL DEFAULT NULL,
+  `ns3` VARCHAR(45) NULL DEFAULT NULL,
+  PRIMARY KEY (`domeinnaam`),
+  UNIQUE INDEX `domeinnaam_UNIQUE` (`domeinnaam` ASC),
+  INDEX `idx_domains_ns0` (`ns0` ASC))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1
 
 -- -----------------------------------------------------
 -- Table `mydb`.`ledger`
@@ -122,6 +138,16 @@ CREATE TABLE IF NOT EXISTS `mydb`.`users` (
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Table `mydb`.`checked-nameservers`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydb`.`checked-nameservers` (
+  `id` INT NOT NULL,
+  `nameserver` VARCHAR(128) NOT NULL,
+  `created` DATETIME NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `nameserver_UNIQUE` (`nameserver` ASC))
+ENGINE = InnoDB;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

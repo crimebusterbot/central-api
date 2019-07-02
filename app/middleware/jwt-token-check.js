@@ -10,6 +10,7 @@ function check(req, res, next) {
         // verifies secret and checks exp
         jwt.verify(token, jwtSecret, function(err, decoded) {
             if (err) {
+                console.log(err);
                 return res.status(403).send({
                     success: false,
                     message: 'Failed to authenticate.'
